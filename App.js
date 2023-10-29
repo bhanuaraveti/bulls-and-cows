@@ -3,14 +3,16 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
-  Button,
-  TextInput,
   StyleSheet,
-  ScrollView,
-  FlatList,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+
+import { Success } from "./components/Success";
+import { Title } from "./components/Title";
+import { Reset } from "./components/Reset";
+import { Input } from "./components/Input";
+import { Feedback } from "./components/Feedback";
+import { History } from "./components/History";
 
 // Function to generate a random 4-letter key
 const generateRandomKey = () => {
@@ -18,7 +20,7 @@ const generateRandomKey = () => {
   let key = "";
   for (let i = 0; i < 4; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
-    key += characters.pop(randomIndex);
+    key += characters.splice(randomIndex, 1);
   }
   return key;
 };
@@ -75,55 +77,17 @@ export default function App() {
 
   return gameOver ? (
     <View style={styles.appContainer}>
-      <View style={styles.congratulationsSection}>
-        <Text style={styles.congratulationText}>Congratulations!</Text>
-        <Text style={styles.congratulationText}>You guessed the key in {attempts} attempts.</Text>
-        <Button title="Play Again" onPress={handleReset} color="#b180f0"/>
-      </View>
+      <Success attempts={attempts} handleReset={handleReset} gameOver={gameOver} />
     </View>
   ) : (
     <>
     <StatusBar style="light" />
     <View style={styles.appContainer}>
-      <View style={styles.titleSection}>
-        <Text style={styles.title}>Bulls and Cows</Text>
-      </View>
-
-      <View style={styles.resetSection}>
-        <Text style={styles.attemptText}>Attempts: {attempts}</Text>
-        <Button title="Reset" onPress={handleReset} color="#f31282" />
-      </View>
-
-      <View style={styles.inputSection}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={(text) => setGuess(text)}
-          value={guess}
-          maxLength={4}
-        />
-        <Button title="Submit Guess" onPress={handleGuess} color="#b180f0" />
-      </View>
-
-      <View style={styles.feedbackSection}>
-        <Text style={styles.feedbackText}>{feedback}</Text>
-      </View>
-
-      <View style={styles.historySection}>
-        <Text style={styles.historyTitle}>Guesses</Text>
-        <FlatList data={history} renderItem={itemData => {
-          return (
-            <View style={styles.historyItem}>
-              <Text style={styles.historyText}>
-                {itemData.item.id}                         {itemData.item.guess} - {itemData.item.feedback}
-              </Text>
-            </View>
-          )
-        }}
-        keyExtractor={(item, index)=>{
-          return item.id;
-        }} 
-        alwaysBounceVertical={false} />
-      </View>
+      <Title />
+      <Reset attempts={attempts} handleReset={handleReset} />
+      <Input handleGuess={handleGuess} guess={guess} setGuess={setGuess} />
+      <Feedback feedback={feedback} />
+      <History history={history} />
     </View>
     </>
   );
@@ -135,94 +99,5 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 16,
     backgroundColor: "#1e085a",
-  },
-  titleSection: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "#cccccc",
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 10,
-    color: "white",
-  },
-  resetSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  attemptText: {
-    fontSize: 12,
-    width: "70%",
-    justifyContent: "center",
-    paddingTop: 15,
-    paddingLeft: 70,
-    color: "white",
-  },
-  inputSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    // paddingBottom: 24,
-    // borderBottomWidth: 1,
-    // borderBottomColor: "#cccccc",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderRadius: 6,
-    borderColor: "#e4d0ff",
-    backgroundColor: "#e4d0ff",
-    color: "#120438",
-    width: "60%",
-    marginRight: 10,
-    padding: 10,
-  },
-  feedbackSection: {
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: 16,
-    marginTop: 12,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#cccccc",
-  },
-  feedbackText: {
-    color: "white",
-  },
-  historySection: {
-    flex: 15,
-    flexDirection: "column",
-    alignContent: "center",
-    justifyContent: "center",
-  },
-  historyTitle: {
-    fontSize: 18,
-    marginBottom: 8,
-    textAlign: "center",
-    color: "white",
-  },
-  historyItem: {
-    margin: 2,
-    padding: 4,
-    borderRadius: 6,
-    backgroundColor: "#5e0acc",
-  },
-  historyText: {
-    color: "white",
-    textAlign: "left",
-  },
-  congratulationsSection: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  congratulationText: {
-    fontSize: 24,
-    marginBottom: 10,
-    color: "white",
-    textAlign: "center",
-  },
+  }
 });
